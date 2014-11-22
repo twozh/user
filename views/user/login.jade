@@ -1,0 +1,22 @@
+extends ../layout
+
+block css
+  link(rel='stylesheet', href='/user/style.css')
+  
+block content
+  form#form-signin.form-signin
+    .form-signin-header
+      h4 请登录
+    .form-signin-body
+      .form-group
+        label.control-label(for="iName") 用户名
+        input#iName.form-control(required)
+      .form-group
+        label.control-label(for="iPass") 密码
+        input#iPass.form-control(type='password', required)
+      input.btn.btn-default(type='submit', value="提交")
+  
+  p.text-danger(id='msg')
+
+block js
+  script(src="/user/main.js")

@@ -1,0 +1,14 @@
+doctype html
+html
+  head
+  title= title || "User"
+  meta(name="viewport", content="width=device-width, initial-scale=1.0")
+  link(rel='stylesheet', href='/bootstrap/dist/css/bootstrap.min.css')
+  block css
+  body
+    block content
+
+  script(src="//localhost:35729/livereload.js")
+  script(src="/jquery/dist/jquery.min.js")
+  script(src="/bootstrap/dist/js/bootstrap.min.js")
+  block js
