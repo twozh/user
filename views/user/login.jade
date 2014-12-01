@@ -9,14 +9,15 @@ block content
       h4 请登录
     .form-signin-body
       .form-group
-        label.control-label(for="iName") 用户名
-        input#iName.form-control(required)
+        label.control-label(for="name") 用户名
+        input#name.form-control(required)
       .form-group
-        label.control-label(for="iPass") 密码
-        input#iPass.form-control(type='password', required)
+        label.control-label(for="passwd") 密码
+        input#passwd.form-control(type='password', required)
+      p.text-danger(id='msg')
       input.btn.btn-default(type='submit', value="提交")
   
-  p.text-danger(id='msg')
+  
 
 block js
   script(src="/user/main.js")

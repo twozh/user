@@ -1,67 +1,103 @@
 var my_prj = {
 
 signup: function(event){
-	$(".has-error").removeClass("has-error");
-	$(".form-signin").find("p").remove();
+	if ($('#name').data('error') || $('#email').data('error')){
+		return false;
+	}
 
-	if ($('#iPass').val().length < 3 || $('#iPass').val() != $('#iPass2').val()){
-		$('.pass').addClass('has-error');
-		$('#msg').clone().html("密码需要一致并且长度要大于3")
-			.appendTo($('#iPass2').parent());
+	if ($('#passwd1').val().length < 6 || $('#passwd1').val() != $('#passwd2').val()){
+		$('#passCheckMsg').html("密码需要一致并且最小长度是6");
+		return false;
 	}
-	else{
-		var data = {
-			name: $('#iName').val(),
-			email: $('#iEmail').val(),
-			pass: $('#iPass').val()
-		};
-		$.post("/signup", data, function(ret){
-			console.log(ret);
-			if (ret.status === 'err'){
-				$('#msg').clone().html(ret.msg)
-					.appendTo($('#iPass2').parent());
-			} else{
-				location.href = '/login';
-			}
-		}).fail(function(){
-			alert( "Sorry, there was a problem!" );
-		});
-	}
+
+	var data = {
+		name: $('#name').val(),
+		email: $('#email').val(),
+		pass: $('#passwd1').val()
+	};
+
+	$.post("/signup", data, function(ret){
+		if (ret.status === 'err'){
+			$('#msg').html(ret.msg);
+		} else{
+			$('#msg').html("注册成功，跳转到登陆后界面！");
+			//location.href = '/login';
+		}
+	}).fail(function(){
+		alert( "服务器异常，请刷新！");
+	});
+	
 	return false;
+},
+
+nameDuplicateCheck: function(){
+	var v = $("#name").val();
+	v = $.trim(v);
+
+	if (!v) return;
+
+	$.post("/nameDupCheck", {name: v}, function(ret){		
+		$('#nameCheckMsg').html('');
+		$('#name').data("error", false);
+		$('#name').parent().removeClass('has-error');
+	}).fail(function(xhr, status, error){
+		$('#nameCheckMsg').html(xhr.responseText);
+		$('#name').data("error", true);
+		$('#name').parent().addClass('has-error');
+	});
+},
+
+emailDuplicateCheck: function(){
+	//var 
+	var v = $("#email").val();
+	v = $.trim(v);
+
+	if (!v) return;
+
+	$.post("/emailDupCheck", {email: v}, function(ret){		
+		$('#emailCheckMsg').html('');
+		$('#email').data("error", false);
+		$('#email').parent().removeClass('has-error');
+	}).fail(function(xhr, status, error){
+		$('#emailCheckMsg').html(xhr.responseText);
+		$('#email').data("error", true);
+		$('#email').parent().addClass('has-error');
+	});
 },
 
 signin: function (event){
-	$(".has-error").removeClass("has-error");
-	$(".form-signin").find("p").remove();
 
-	if ($('#iPass').val().length < 3){
-		$('#iPass').parent().addClass('has-error');
-		$('#msg').clone().html("Password's length should longer than 3")
-			.appendTo($('#iPass').parent());
+	if ($('#passwd').val().length < 3){
+		$('#msg').html("Password's length should longer than 3");
+		return false;
 	}
-	else{
-		var data = {
-			name: $('#iName').val(),
-			pass: $('#iPass').val()
-		};
-		$.post("/login", data, function(ret){
-			console.log(ret);
-			if (ret.status === 'err'){
-				$('#msg').clone().html(ret.msg)
-					.appendTo($('#iPass').parent());
-			} else {
-				//location.href = '/' + data.name;
-				console.log("login ok!");
-			}
-		}).fail(function(){
-			alert( "Sorry, there was a problem!" );
-		});
-	}
+
+	var data = {
+		name: $('#name').val(),
+		pass: $('#passwd').val()
+	};
+
+	$.post("/login", data, function(ret){
+		if (ret.status === 'err'){
+			$('#msg').html(ret.msg);
+		} else {
+			//location.href = '/' + data.name;
+			$('#msg').html("login ok!");
+		}
+	}).fail(function(){
+		alert( "服务器异常，请刷新！");
+	});
+
 	return false;
 },
+
+
+
 };
 
 $(document).ready(function() {
 	$("#form-signup").submit(my_prj.signup);
 	$("#form-signin").submit(my_prj.signin);
+	$("#name").keyup(my_prj.nameDuplicateCheck);
+	$("#email").keyup(my_prj.emailDuplicateCheck);
 });

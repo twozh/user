@@ -20,7 +20,7 @@ userSchema.statics.create = function(obj, cb){
 	/* user'name unique check */
 	this.findOne({name: obj.name}, function(err, user){
 		if (user !== null){
-			cb(new Error('user exist'));
+			cb(new Error('用户名已存在！'));
 			return;
 		}
 		hash.hash(obj.pass, function(err, salt, hash){
@@ -78,14 +78,14 @@ var loginPost = function(req,res){
 			return res.send({status: "err", msg: err.message});
 		}
 
-		return res.send({status: "succ", msg: "Login OK! Welcom!"});
+		//return res.send({status: "succ", msg: "Login OK! Welcom!"});
 
-		//req.session.regenerate(function(){
-		//	req.session.userid = userid;
-		//	req.session.username = req.body.name;
-		//	req.session.auth = true;
-		//	return res.send({status: "succ", msg: "Login OK! Welcom!"});
-	    //});
+		req.session.regenerate(function(){
+			req.session.userid = userid;
+			req.session.username = req.body.name;
+			req.session.auth = true;
+			return res.send({status: "succ", msg: "Login OK! Welcom!"});
+	    });
 	});
 };
 
@@ -94,7 +94,6 @@ var signup = function(req, res) {
 };
 
 var signupPost = function(req, res){
-	console.log(req.body);
 	User.create(req.body, function(err, msg){
 		if (err){
 			return res.send({status: 'err', msg: err.message});
@@ -103,6 +102,34 @@ var signupPost = function(req, res){
 	});
 };
 
+var nameDupCheck = function(req, res){
+	if (!req.body.name){
+		return res.status(403).send("用户名不能为空");
+	}
+
+	User.findOne({name: req.body.name}, function(err, user){
+		if (err)
+			return res.status(403).send(err.msg);
+		if (user)
+			return res.status(403).send("用户名已存在！");
+		return res.send("OK");
+	});
+}
+
+var emailDupCheck = function(req, res){
+	if (!req.body.email){
+		return res.status(403).send("E-mail不能为空");
+	}
+
+	User.findOne({email: req.body.email}, function(err, user){
+		if (err)
+			return res.status(403).send(err.msg);
+		if (user)
+			return res.status(403).send("E-mail已存在！");
+		return res.send("OK");
+	});
+}
+
 
 router.get('/', 		login);
 router.get('/login', 	login);
@@ -110,7 +137,8 @@ router.get('/signup', 	signup);
 router.post('/login', 	loginPost);
 router.post('/signup', 	signupPost);
 
-
+router.post('/nameDupCheck', 	nameDupCheck);
+router.post('/emailDupCheck', 	emailDupCheck);
 
 
 module.exports = router;
