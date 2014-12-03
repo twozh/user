@@ -94,11 +94,18 @@ var signup = function(req, res) {
 };
 
 var signupPost = function(req, res){
-	User.create(req.body, function(err, msg){
+	var email = req.body.email;
+	var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+	if (!regex.test(email)){
+		return res.status(403).send("Email格式不正确！");
+	}
+
+	User.create(req.body, function(err, user){
 		if (err){
-			return res.send({status: 'err', msg: err.message});
+			return res.status(403).send(err.message);
 		}
-		res.send(msg);
+		res.send("Success");
 	});
 };
 
