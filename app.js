@@ -5,11 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var methodOverride = require('method-override');
 //connect mongodb
 var mongoose = require('mongoose');
 mongoose.connect("mongodb://localhost/user");
 
-var user = require('./user.js');
+var user = require('./routes/user/user-route.js');
 
 var app = express();
 
@@ -26,6 +27,9 @@ app.use(cookieParser());
 app.use(session({secret: 'keyboard catt'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
+app.use(methodOverride('X-HTTP-Method'))          // Microsoft
+app.use(methodOverride('X-HTTP-Method-Override')) // Google/GData
+app.use(methodOverride('X-Method-Override'))      // IBM
 
 app.use('/', user);
 

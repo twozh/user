@@ -10,12 +10,15 @@ block content
     .form-signin-body
       .form-group
         label.control-label(for="name") 用户名
-        input#name.form-control(required)
+        input#nameLogin.form-control(required)
       .form-group
         label.control-label(for="passwd") 密码
-        input#passwd.form-control(type='password', required)
+        input#passwdLogin.form-control(type='password', required)
       p.text-danger(id='msg')
       input.btn.btn-default(type='submit', value="提交")
+      br
+      br
+      a(href='/findpasswd') Forget password
   
   
 

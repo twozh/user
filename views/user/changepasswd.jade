@@ -1,0 +1,14 @@
+extends ../layout
+
+block css
+  link(rel='stylesheet', href='/user/style.css')
+
+block content
+  .container
+    p change password:
+    input#newpasswd
+    button#btnNewPasswd.btn.btn-default(userid=id) Change
+
+
+block js
+  script(src="/user/main.js")

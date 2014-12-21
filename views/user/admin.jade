@@ -1,0 +1,34 @@
+extends ../layout
+
+block css
+  link(rel='stylesheet', href='/user/style.css')
+
+block content
+  .container#userAdminApp
+    .row
+      .col-md-3.col-xs-3
+        | Welcom
+      .col-md-9.col-xs-9
+        | Total users number: <sapn id="totalUsers"></sapn>
+
+    .row
+      .col-md-3.col-xs-3
+      .col-md-9.col-xs-9#userList
+
+    script(type="text/template", id="item-template")
+      p <%- name %>
+      p <%- email %>
+      p <%- registerTime %>
+      p <%- group %>
+      <% if (group !== 'admin' && group !== 'super'){ %>
+      button#setAdmin.btn.btn-default Change to admin
+      <% } %>
+      <% if (group === 'admin'){ %>
+      button#dismissAdmin.btn.btn-default Dismiss admin
+      <% } %>
+      hr
+
+block js
+  script(src="/underscore-min.js")
+  script(src="/backbone-min.js")
+  script(src="/user/user-admin-backbone.js")

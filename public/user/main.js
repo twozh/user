@@ -1,5 +1,26 @@
 var my_prj = {
 
+signin: function (event){
+	if ($('#passwdLogin').val().length < 3){
+		$('#msg').html("密码长度最小是3");
+		return false;
+	}
+
+	var data = {
+		name: $('#nameLogin').val(),
+		pass: $('#passwdLogin').val()
+	};
+
+	$.post("/login", data, function(ret){
+		//location.href = '/' + data.name;
+		$('#msg').html(ret);
+	}).fail(function(xhr, status, error){
+		$('#msg').html(xhr.responseText);
+	});
+
+	return false;
+},
+
 signup: function(event){
 	if ($('#name').data('error') || $('#email').data('error')){
 		return false;
@@ -77,33 +98,47 @@ resetPassClass: function(){
 	$('#passCheckMsg').html("");
 },
 
-signin: function (event){
+changePasswd: function(){
+	var passwd = $('#newpasswd').val();
+	passwd = $.trim(passwd);
 
-	if ($('#passwd').val().length < 3){
-		$('#msg').html("Password's length should longer than 3");
+	if (!passwd){
 		return false;
 	}
 
-	var data = {
-		name: $('#name').val(),
-		pass: $('#passwd').val()
-	};
+	var userid = $('#btnNewPasswd').attr('userid');
+	var url;
+	if (userid){
+		url = '/changepasswd/' + userid;
+	} else{
+		url = '/changepasswd';
+	}
 
-	$.post("/login", data, function(ret){
-		if (ret.status === 'err'){
-			$('#msg').html(ret.msg);
-		} else {
-			//location.href = '/' + data.name;
-			$('#msg').html("login ok!");
-		}
-	}).fail(function(){
-		alert( "服务器异常，请刷新！");
+	$.post(url, {newpasswd: passwd}, function(ret){
+		console.log(ret);
+	}).fail(function(xhr, status, error){
+		console.log(xhr.responseText);
 	});
-
-	return false;
 },
 
+findPasswd: function(){
+	var v = $('#email').val();
+	v = $.trim(v);
 
+	if (!v) return;
+	var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+	if (!regex.test(v)){
+		console.log("Email格式不正确！");
+		return;
+	}
+
+	$.post("/sendmail", {email: v}, function(ret){
+		console.log(ret);
+	}).fail(function(xhr, status, error){
+		console.log(xhr.responseText);
+	});
+},
 
 };
 
@@ -114,4 +149,6 @@ $(document).ready(function() {
 	$("#email").keyup(my_prj.emailDuplicateCheck);
 	$("#passwd1").keyup(my_prj.resetPassClass);
 	$("#passwd2").keyup(my_prj.resetPassClass);
+	$('#btnNewPasswd').click(my_prj.changePasswd);
+	$('#btnFindPasswd').click(my_prj.findPasswd);
 });

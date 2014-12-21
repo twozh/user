@@ -1,0 +1,14 @@
+extends ../layout
+
+block css
+  link(rel='stylesheet', href='/user/style.css')
+
+block content
+  .container
+    p you email when register:
+    input#email
+    button#btnFindPasswd.btn.btn-default Find 
+
+
+block js
+  script(src="/user/main.js")
