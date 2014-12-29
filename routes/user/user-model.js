@@ -10,7 +10,6 @@ var userSchema = new Schema({
 	email		: {type: String, required: true},
 	registerTime: {type: Date, default: Date.now, required: true},
 	group		: {type: String, enum: ['super', 'admin', 'normal'], default: 'normal'},
-	isInFindState: {type: Boolean, default: false},
 	findStartTime: {type: Date},	
 });
 
@@ -34,7 +33,7 @@ userSchema.statics.create = function(obj, cb){
 					cb(new Error('new user save error'));
 					return;
 				}
-				cb(null, {status: 'succ', msg: 'create user succ!'});
+				cb(null, newUser);
 			});
 		});
 	});

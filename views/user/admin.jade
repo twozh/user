@@ -26,6 +26,9 @@ block content
       <% if (group === 'admin'){ %>
       button#dismissAdmin.btn.btn-default Dismiss admin
       <% } %>
+      <% if (group !== 'super'){ %>
+      button#delUser.btn.btn-default delete
+      <% } %>
       hr
 
 block js

@@ -4,23 +4,21 @@ block css
   link(rel='stylesheet', href='/user/style.css')
   
 block content
-  form#form-signin.form-signin
-    .form-signin-header
+  form#form-signin.form(action="/login"+redirect, method="POST")
+    .form-header
       h4 请登录
-    .form-signin-body
+    .form-body
       .form-group
         label.control-label(for="name") 用户名
-        input#nameLogin.form-control(required)
+        input.form-control(name="name", required)
       .form-group
-        label.control-label(for="passwd") 密码
-        input#passwdLogin.form-control(type='password', required)
+        label.control-label(for="pass") 密码
+        input#passwdLogin.form-control(name="pass", type='password', required)
       p.text-danger(id='msg')
       input.btn.btn-default(type='submit', value="提交")
       br
       br
-      a(href='/findpasswd') Forget password
-  
-  
+      a(href='/findpasswd') Forget password  
 
 block js
   script(src="/user/main.js")

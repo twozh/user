@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 mongoose.connect("mongodb://localhost/user");
 
 var user = require('./routes/user/user-route.js');
+var userApi = require('./routes/user/user-route-api.js');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use(methodOverride('X-HTTP-Method'))          // Microsoft
 app.use(methodOverride('X-HTTP-Method-Override')) // Google/GData
 app.use(methodOverride('X-Method-Override'))      // IBM
 
+app.use('/api/user/', userApi);
 app.use('/', user);
 
 // catch 404 and forward to error handler

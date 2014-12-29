@@ -15,7 +15,7 @@ var User = Backbone.Model.extend({
 //User collection
 var Users = Backbone.Collection.extend({
 	model: User,
-	url: '/user/users',
+	url: '/api/user/users',
 });
 
 //User item view
@@ -26,6 +26,7 @@ var UserView = Backbone.View.extend({
 	events: {
 		'click #setAdmin'		: 'setAdmin',
 		'click #dismissAdmin'	: 'dismissAdmin',
+		'click #delUser'		: 'delUser',
 	},
 
 	initialize: function(){
@@ -58,6 +59,19 @@ var UserView = Backbone.View.extend({
 			patch: true,
 		});
 	},
+
+	delUser: function(){
+		var ret = confirm("Are you sure to delete ?");
+		if (ret) {
+			this.model.destroy({
+				wait: true,
+
+				error: function(){
+						alert('服务器异常，请刷新！');
+					},
+			});
+		}				
+	},
 });
 
 //The App View
@@ -74,6 +88,7 @@ var UserAdminView = Backbone.View.extend({
 
 		//this.listenTo(this.users, 'add', 	this.renderModel);
 		this.listenTo(this.users, 'reset', 	this.renderCollection);
+		this.listenTo(this.users, 'remove', this.freshNonModelView);
 
 		this.users.fetch({
 			error: function(c, r, o){
@@ -89,9 +104,7 @@ var UserAdminView = Backbone.View.extend({
 	},
 
 	renderCollection: function(){
-		this.totalUsers = this.users.length;
 		this.freshNonModelView();
-
 		this.$('#userList').empty();		
 		if (this.users.length === 0) return;
 
@@ -107,6 +120,7 @@ var UserAdminView = Backbone.View.extend({
 	},
 
 	freshNonModelView: function(){
+		this.totalUsers = this.users.length;
 		this.$('#totalUsers').html(this.totalUsers);
 	},
 });

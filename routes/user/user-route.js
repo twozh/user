@@ -2,25 +2,38 @@ var express = require('express');
 var router = express.Router();
 var User = require('./user-model.js');
 var nodemailer = require('nodemailer');
-//var smtpTransport = require('nodemailer-smtp-transport');
+var gFindpassTimeout = 10*60*1000; //10min
 
 // create reusable transporter object using SMTP transport
 var transporter = nodemailer.createTransport({
-    service: 'QQ',
-    auth: {
-        user: '375488770@qq.com',
-        pass: 'coderushi2zh'
-    }
+	service: 'QQ',
+	auth: {
+		user: '375488770@qq.com',
+		pass: 'coderushi2zh'
+	}
 });
 
 /************************************************
 	route and control
 *************************************************/
-var login = function(req, res) {	
-	res.render('user/login');
+var login = function(req, res) {
+	var redirect = '';
+	if (req.query.redirect){
+		redirect = '?redirect=' + req.query.redirect;
+	}
+	
+	res.render('user/login', {redirect: redirect});
 };
 
 var loginPost = function(req, res){
+	console.log(req.body);
+	console.log(req.query);
+	var redirect='/i';
+
+	if (req.query.redirect){
+		redirect = req.query.redirect;
+	}
+
 	User.auth(req.body.name, req.body.pass, function(err, userid){
 		if (err){
 			return res.status(403).send(err.message);
@@ -30,8 +43,15 @@ var loginPost = function(req, res){
 			req.session.userid = userid;
 			req.session.username = req.body.name;
 			req.session.auth = true;
-			return res.send("Login OK! Welcom!");
-	    });
+			return res.redirect(redirect);
+		});
+	});
+};
+
+var logout = function(req, res){
+	req.session.destroy(function(){
+
+		return res.redirect("/");
 	});
 };
 
@@ -51,109 +71,41 @@ var signupPost = function(req, res){
 		if (err){
 			return res.status(403).send(err.message);
 		}
-		res.send("Success");
-	});
-};
 
-var nameDupCheck = function(req, res){
-	if (!req.body.name){
-		return res.status(403).send("用户名不能为空");
-	}
-
-	User.findOne({name: req.body.name}, function(err, user){
-		if (err)
-			return res.status(403).send(err.msg);
-		if (user)
-			return res.status(403).send("用户名已存在！");
-		return res.send("OK");
-	});
-};
-
-var emailDupCheck = function(req, res){
-	if (!req.body.email){
-		return res.status(403).send("E-mail不能为空");
-	}
-
-	User.findOne({email: req.body.email}, function(err, user){
-		if (err)
-			return res.status(403).send(err.msg);
-		if (user)
-			return res.status(403).send("E-mail已存在！");
-		return res.send("OK");
+		req.session.regenerate(function(){
+			req.session.userid = user._id;
+			req.session.username = req.body.name;
+			req.session.auth = true;
+			return res.redirect('/i');
+		});
 	});
 };
 
 var admin = function(req, res){
 	if (req.session.auth !== true){
-		return res.render('user/admin-warning');
+		return res.redirect('/login?redirect='+req.url);
 	}
 
-	res.render('user/admin');
-};
-
-var sendmailPost = function(req, res){
-	User.findOne({email: req.body.email}, function(err, user){
+	User.findById(req.session.userid, function(err, user){
 		if (err)
-			return res.status(403).send(err.msg);
-		if (!user)
-			return res.status(403).send("E-mail dose not exist！");
-
-		// setup e-mail data with unicode symbols
-		var mailOptions = {
-		    from: 'User Center <ceo@jiansoft.net>', // sender address
-		    to: req.body.email, // list of receivers
-		    subject: 'Change password', // Subject line
-		    text: 'Hello world ✔', // plaintext body
-		    html: "<a href=http://localhost:3000/changepasswd/" + user._id + ">Change password ✔</a>" // html body
-		};
-
-		// send mail with defined transport object
-		transporter.sendMail(mailOptions, function(error, info){
-		    if(error){
-		        console.log(error);
-		    }else{
-		        console.log('Message sent: ' + info.response);
-		        user.isInFindState = true;
-				user.findStartTime = Date.now();
-		        user.save(function(err, user){
-					if (err)
-						return res.status(403).send(err.msg);
-					return res.send("OK");
-				});		
-		    }
-		});		
-	});
-};
-
-var userRetrieveUsers = function(req, res){	
-	User.find({}, 'name email registerTime group', function(err, users){
-		if (err){
-			return res.status(403).send(err.msg);
+			return res.status(403).send(err.message);
+	
+		if (!user){
+			console.log(req.session.userid);
+			return res.status(403).send("user dosenot exist, refresh!");
 		}
-		console.log("users length:", users.length);
 
-		res.send(users);
-	});
-};
-
-var userUpdateUser = function(req, res){
-	User.findByIdAndUpdate(req.params.id, 
-		req.body, 
-		{select: 'name email registerTime group'}, 
-		function(err, user){
-			if (err){
-				console.log(err);
-				return res.status(403).send(err.message);
-			}
-
-			res.send(user);
+		if (user.group === 'super' || user.group === 'admin'){			
+			return res.render('user/admin');
+		} else{			
+			return res.status(403).send("You have not admin previlege");
 		}
-	);
+	});	
 };
 
 var userCenter = function(req, res){
 	if (req.session.auth !== true){
-		return res.redirect('/login');
+		return res.redirect('/login?redirect='+req.url);
 	}
 
 	var render = {
@@ -168,8 +120,6 @@ var changePasswd = function(req, res){
 		return res.status(403).send('not login');
 	}
 	
-	console.log(req.body);
-
 	User.changePasswd(req.session.userid, req.body.newpasswd, function(err, user){
 		if (err){
 			return res.status(403).send(err.message);
@@ -179,14 +129,60 @@ var changePasswd = function(req, res){
 	});
 };
 
+
 var findPasswd = function(req, res){
 	res.render('user/findpasswd');
 };
 
+var findPasswdPost = function(req, res){
+	User.findOne({email: req.body.email}, function(err, user){
+		if (err)
+			return res.status(403).send(err.message);
+		if (!user)
+			return res.status(403).send("E-mail dose not exist！");
+
+		var now = Date.now();
+		var diff = now - user.findStartTime;
+
+		if (diff && diff < gFindpassTimeout){
+			return res.status(404).send('has already post.');
+		}
+
+		// setup e-mail data with unicode symbols
+		var mailOptions = {
+			from: 'User Center <ceo@jiansoft.net>', // sender address
+			to: req.body.email, // list of receivers
+			subject: 'Change password', // Subject line
+			text: 'Hello world ✔', // plaintext body
+			html: "<a href=http://localhost:3000/i/changepasswd/" + user._id + ">Change password</a>" // html body
+		};
+
+		// send mail with defined transport object
+		transporter.sendMail(mailOptions, function(error, info){
+			if(error){
+				console.log(error);
+			}else{
+				console.log('Message sent: ' + info.response);
+				user.findStartTime = Date();
+				user.save(function(err, user){
+					if (err)
+						return res.status(403).send(err.message);
+					return res.send("Has sent an email to "+req.body.email);
+				});		
+			}
+		});		
+	});
+}
+
 var changePasswdByFind = function(req, res){
+
 	User.findById(req.params.id, function(err, user){
-		if (user.isInFindState === false){
-			return res.status(404).send('unavailable');
+		var now = Date.now();
+		var diff = now - user.findStartTime;
+
+		if (diff > gFindpassTimeout){
+			//10min
+			return res.status(404).send('unavailable or timeout');
 		}
 
 		res.render('user/changepasswd', {id: req.params.id});
@@ -194,38 +190,44 @@ var changePasswdByFind = function(req, res){
 };
 
 var changePasswdByFindPost = function(req, res){
-	User.changePasswd(req.params.id, req.body.newpasswd, function(err, user){
-		if (err){
-			return res.status(403).send(err.message);
+	User.findById(req.params.id, function(err, user){
+		var now = Date.now();
+		var diff = now - user.findStartTime;
+
+		if (diff > gFindpassTimeout){
+			return res.status(404).send('unavailable or timeout');
 		}
 
-		res.send('change passwd ok!');
-	});
-}
+		User.changePasswd(req.params.id, req.body.newpasswd, function(err, user){
+			if (err){
+				return res.status(403).send(err.message);
+			}
+
+			user.findStartTime = 0;
+
+			user.save(function(err, user){
+				if (err)
+					return res.status(403).send(err.message);
+				return res.send('change passwd ok!');
+			});
+		});		
+	});	
+};
 
 router.get('/', 				login);
 router.get('/login', 			login);
+router.post('/login',			loginPost);
+router.get('/logout', 			logout);
 router.get('/signup', 			signup);
-router.post('/login', 			loginPost);
 router.post('/signup', 			signupPost);
-router.post('/nameDupCheck', 	nameDupCheck);
-router.post('/emailDupCheck', 	emailDupCheck);
-
-router.post('/sendmail', 		sendmailPost);
-
-//user admin
 router.get('/admin',			admin);
+router.get('/i', 				userCenter);
+router.post('/i/changepasswd',	changePasswd);
+router.get('/i/changepasswd/:id', changePasswdByFind);
+router.post('/i/changepasswd/:id', changePasswdByFindPost);
+router.get('/findpasswd', 		findPasswd);
+router.post('/findpasswd', 		findPasswdPost);
 
-//CRUD-users
-router.get('/user/users',		userRetrieveUsers);
-router.patch('/user/users/:id',	userUpdateUser);
 
-//user center
-router.get('/i', userCenter);
-router.post('/changepasswd', changePasswd);
-router.get('/findpasswd', findPasswd);
-
-router.get('/changepasswd/:id', changePasswdByFind);
-router.post('/changepasswd/:id', changePasswdByFindPost);
 
 module.exports = router;

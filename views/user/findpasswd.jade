@@ -5,10 +5,13 @@ block css
 
 block content
   .container
-    p you email when register:
-    input#email
-    button#btnFindPasswd.btn.btn-default Find 
-
+    form#form-findpasswd.form(action="/findpasswd", method="POST")
+      .form-header
+        h4 you email when register:
+      .form-body
+        .form-group
+          input#registerEmail.form-control(name="email", type='email', required)
+        input.btn.btn-default(type='submit', value="提交")
 
 block js
   script(src="/user/main.js")

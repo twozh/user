@@ -6,10 +6,17 @@ block css
 block content
   .container
     h1 Welcom #{name}
-    p change password
-    input#newpasswd
-    button#btnNewPasswd.btn.btn-default Change
 
+    form#form-signin.form(action="/i/changepasswd", method="POST")
+      .form-header
+        h4 change password
+      .form-body
+        .form-group
+          label.control-label(for="newpasswd") newpasswd
+          input#passwdLogin.form-control(name="newpasswd", type='password', required)
+        input.btn.btn-default(type='submit', value="提交")
+ 
+    a.btn.btn-default(href="/logout") logout
 
 block js
   script(src="/user/main.js")

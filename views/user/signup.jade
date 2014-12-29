@@ -4,21 +4,21 @@ block css
   link(rel='stylesheet', href='/user/style.css')
 
 block content
-  form#form-signup.form-signin
-    .form-signin-header
+  form#form-signup.form(action="/signup", method="POST")
+    .form-header
       h4 创建新用户
-    .form-signin-body
+    .form-body
       .form-group
         label.control-label(for="name") 用户名
-        input#name.form-control(required)
+        input#name.form-control(name="name", required)
         p.text-danger(id='nameCheckMsg')
       .form-group
         label.control-label(for="email") E-mail
-        input#email.form-control(type='email', required)
+        input#email.form-control(name="email", type='email', required)
         p.text-danger(id='emailCheckMsg')
       .form-group.pass
-        label.control-label(for="passwd1") 密码
-        input#passwd1.form-control(type='password', required, placeholder='min length is 6')
+        label.control-label(for="pass") 密码
+        input#passwd1.form-control(name="pass", type='password', required, placeholder='min length is 6')
       .form-group.pass
         label.control-label(for="passwd2") 重复密码
         input#passwd2.form-control(type='password', required)

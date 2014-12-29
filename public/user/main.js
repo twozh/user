@@ -5,20 +5,6 @@ signin: function (event){
 		$('#msg').html("密码长度最小是3");
 		return false;
 	}
-
-	var data = {
-		name: $('#nameLogin').val(),
-		pass: $('#passwdLogin').val()
-	};
-
-	$.post("/login", data, function(ret){
-		//location.href = '/' + data.name;
-		$('#msg').html(ret);
-	}).fail(function(xhr, status, error){
-		$('#msg').html(xhr.responseText);
-	});
-
-	return false;
 },
 
 signup: function(event){
@@ -30,21 +16,6 @@ signup: function(event){
 		$('#passCheckMsg').html("密码需要一致并且最小长度是6");
 		return false;
 	}
-
-	var data = {
-		name: $('#name').val(),
-		email: $('#email').val(),
-		pass: $('#passwd1').val()
-	};
-
-	$.post("/signup", data, function(ret){
-		$('#msg').html("注册成功，跳转到登陆后界面！");
-		//location.href = '/login';	
-	}).fail(function(xhr, status, error){
-		$('#msg').html(xhr.responseText);
-	});
-	
-	return false;
 },
 
 nameDuplicateCheck: function(){
@@ -53,7 +24,7 @@ nameDuplicateCheck: function(){
 
 	if (!v) return;
 
-	$.post("/nameDupCheck", {name: v}, function(ret){		
+	$.post("/api/user/nameDupCheck", {name: v}, function(ret){		
 		$('#nameCheckMsg').html('');
 		$('#name').data("error", false);
 		$('#name').parent().removeClass('has-error');
@@ -83,7 +54,7 @@ emailDuplicateCheck: function(){
 	$('#email').data("error", false);
 	$('#email').parent().removeClass('has-error');
 
-	$.post("/emailDupCheck", {email: v}, function(ret){		
+	$.post("/api/user/emailDupCheck", {email: v}, function(ret){		
 		$('#emailCheckMsg').html('');
 		$('#email').data("error", false);
 		$('#email').parent().removeClass('has-error');
@@ -98,46 +69,17 @@ resetPassClass: function(){
 	$('#passCheckMsg').html("");
 },
 
-changePasswd: function(){
-	var passwd = $('#newpasswd').val();
-	passwd = $.trim(passwd);
-
-	if (!passwd){
-		return false;
-	}
-
-	var userid = $('#btnNewPasswd').attr('userid');
-	var url;
-	if (userid){
-		url = '/changepasswd/' + userid;
-	} else{
-		url = '/changepasswd';
-	}
-
-	$.post(url, {newpasswd: passwd}, function(ret){
-		console.log(ret);
-	}).fail(function(xhr, status, error){
-		console.log(xhr.responseText);
-	});
-},
-
 findPasswd: function(){
-	var v = $('#email').val();
+	var v = $('#registerEmail').val();
 	v = $.trim(v);
 
-	if (!v) return;
+	if (!v) return false;
 	var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	if (!regex.test(v)){
 		console.log("Email格式不正确！");
-		return;
+		return false;
 	}
-
-	$.post("/sendmail", {email: v}, function(ret){
-		console.log(ret);
-	}).fail(function(xhr, status, error){
-		console.log(xhr.responseText);
-	});
 },
 
 };
@@ -145,10 +87,10 @@ findPasswd: function(){
 $(document).ready(function() {
 	$("#form-signup").submit(my_prj.signup);
 	$("#form-signin").submit(my_prj.signin);
+	$("#form-findpasswd").submit(my_prj.findPasswd);
+
 	$("#name").keyup(my_prj.nameDuplicateCheck);
 	$("#email").keyup(my_prj.emailDuplicateCheck);
 	$("#passwd1").keyup(my_prj.resetPassClass);
 	$("#passwd2").keyup(my_prj.resetPassClass);
-	$('#btnNewPasswd').click(my_prj.changePasswd);
-	$('#btnFindPasswd').click(my_prj.findPasswd);
 });

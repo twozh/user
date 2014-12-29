@@ -5,9 +5,14 @@ block css
 
 block content
   .container
-    p change password:
-    input#newpasswd
-    button#btnNewPasswd.btn.btn-default(userid=id) Change
+    form.form(action="/i/changepasswd/" + id, method="POST")
+      .form-header
+        h4 change password
+      .form-body
+        .form-group
+          label.control-label(for="newpasswd") newpasswd
+          input#passwdLogin.form-control(name="newpasswd", type='password', required)
+        input.btn.btn-default(type='submit', value="提交")
 
 
 block js
