@@ -22,7 +22,7 @@ var login = function(req, res) {
 		redirect = '?redirect=' + req.query.redirect;
 	}
 	
-	res.render('user/login', {redirect: redirect});
+	res.render('login', {redirect: redirect});
 };
 
 var loginPost = function(req, res){
@@ -56,7 +56,7 @@ var logout = function(req, res){
 };
 
 var signup = function(req, res) {
-	res.render('user/signup');
+	res.render('signup');
 };
 
 var signupPost = function(req, res){
@@ -96,7 +96,7 @@ var admin = function(req, res){
 		}
 
 		if (user.group === 'super' || user.group === 'admin'){			
-			return res.render('user/admin');
+			return res.render('admin');
 		} else{			
 			return res.status(403).send("You have not admin previlege");
 		}
@@ -112,7 +112,7 @@ var userCenter = function(req, res){
 		name: req.session.username,
 	};
 
-	res.render('user/center', render);
+	res.render('center', render);
 };
 
 var changePasswd = function(req, res){
@@ -131,7 +131,7 @@ var changePasswd = function(req, res){
 
 
 var findPasswd = function(req, res){
-	res.render('user/findpasswd');
+	res.render('findpasswd');
 };
 
 var findPasswdPost = function(req, res){
@@ -185,7 +185,7 @@ var changePasswdByFind = function(req, res){
 			return res.status(404).send('unavailable or timeout');
 		}
 
-		res.render('user/changepasswd', {id: req.params.id});
+		res.render('changepasswd', {id: req.params.id});
 	});	
 };
 

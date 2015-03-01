@@ -1,7 +1,7 @@
-extends ../layout
+extends layout
 
 block css
-  link(rel='stylesheet', href='/user/style.css')
+  link(rel='stylesheet', href='/style.css')
   
 block content
   form#form-signin.form(action="/login"+redirect, method="POST")
@@ -21,4 +21,4 @@ block content
       a(href='/findpasswd') Forget password  
 
 block js
-  script(src="/user/main.js")
+  script(src="/main.js")
