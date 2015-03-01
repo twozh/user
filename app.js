@@ -28,9 +28,9 @@ app.use(cookieParser());
 app.use(session({secret: 'keyboard catt'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
-app.use(methodOverride('X-HTTP-Method'))          // Microsoft
-app.use(methodOverride('X-HTTP-Method-Override')) // Google/GData
-app.use(methodOverride('X-Method-Override'))      // IBM
+app.use(methodOverride('X-HTTP-Method'));          // Microsoft
+app.use(methodOverride('X-HTTP-Method-Override')); // Google/GData
+app.use(methodOverride('X-Method-Override'));      // IBM
 
 app.use('/api/user/', userApi);
 app.use('/', user);

@@ -76,7 +76,7 @@ var apiChangePasswdByFind = function(req, res){
 
 		res.send('change passwd ok!');
 	});
-}
+};
 
 router.post('/nameDupCheck', 	apiNameDupCheck);
 router.post('/emailDupCheck',	apiEmailDupCheck);

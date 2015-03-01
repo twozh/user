@@ -172,7 +172,7 @@ var findPasswdPost = function(req, res){
 			}
 		});		
 	});
-}
+};
 
 var changePasswdByFind = function(req, res){
 
