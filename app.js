@@ -10,13 +10,13 @@ var methodOverride = require('method-override');
 var mongoose = require('mongoose');
 mongoose.connect("mongodb://localhost/user");
 
-var user = require('./user').userRoute;
-var userApi = require('./user').userApiRoute;
+var user = require('./index.js').userRoute;
+var userApi = require('./index.js').userApiRoute;
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'user/views'));
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({secret: 'keyboard catt'}));
-app.use(express.static(path.join(__dirname, 'user/public')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(methodOverride('X-HTTP-Method'));          // Microsoft
 app.use(methodOverride('X-HTTP-Method-Override')); // Google/GData
