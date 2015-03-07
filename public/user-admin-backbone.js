@@ -15,7 +15,7 @@ var User = Backbone.Model.extend({
 //User collection
 var Users = Backbone.Collection.extend({
 	model: User,
-	url: '/api/user/users',
+	url: '/user/api/users',
 });
 
 //User item view

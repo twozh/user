@@ -1,11 +1,11 @@
 extends layout
 
 block css
-  link(rel='stylesheet', href='/style.css')
+  link(rel='stylesheet', href='/user-style.css')
 
 block content
   .container
-    form#form-findpasswd.form(action="/findpasswd", method="POST")
+    form#form-findpasswd.form(action="/user/findpasswd", method="POST")
       .form-header
         h4 you email when register:
       .form-body
@@ -14,4 +14,4 @@ block content
         input.btn.btn-default(type='submit', value="提交")
 
 block js
-  script(src="/main.js")
+  script(src="/user-main.js")

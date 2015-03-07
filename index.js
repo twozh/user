@@ -1,7 +1,13 @@
-var user = require('./routes/user-route.js');
-var userApi = require('./routes/user-route-api.js');
+/*
+	user session provide:
+	req.session.auth
+	req.session.username
+	req.session.userid
+ */
+exports.route = require('./routes/user-route.js');
+exports.apiRoute = require('./routes/user-route-api.js');
 
-exports.userRoute = user;
-exports.userApiRoute = userApi;
+exports.loginPath = "/user/login";
 
-//1
+exports.User = require('./routes/user-model.js');
+

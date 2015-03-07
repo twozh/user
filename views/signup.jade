@@ -1,10 +1,10 @@
 extends layout
 
 block css
-  link(rel='stylesheet', href='/style.css')
+  link(rel='stylesheet', href='/user-style.css')
 
 block content
-  form#form-signup.form(action="/signup", method="POST")
+  form#form-signup.form(action="/user/signup", method="POST")
     .form-header
       h4 创建新用户
     .form-body
@@ -27,4 +27,4 @@ block content
       input#submit.btn.btn-default(type='submit', value="提交")
 
 block js
-  script(src="/main.js")
+  script(src="/user-main.js")

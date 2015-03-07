@@ -1,11 +1,11 @@
 extends layout
 
 block css
-  link(rel='stylesheet', href='/style.css')
+  link(rel='stylesheet', href='/user-style.css')
 
 block content
   .container
-    form.form(action="/i/changepasswd/" + id, method="POST")
+    form.form(action="/user/i/changepasswd/" + id, method="POST")
       .form-header
         h4 change password
       .form-body
@@ -16,4 +16,4 @@ block content
 
 
 block js
-  script(src="/main.js")
+  script(src="/user-main.js")

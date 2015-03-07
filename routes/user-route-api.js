@@ -35,7 +35,6 @@ var apiUserRetrieveUsers = function(req, res){
 		if (err){
 			return res.status(403).send(err.msg);
 		}
-		console.log("users length:", users.length);
 
 		res.send(users);
 	});

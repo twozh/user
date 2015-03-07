@@ -1,10 +1,10 @@
 extends layout
 
 block css
-  link(rel='stylesheet', href='/style.css')
+  link(rel='stylesheet', href='/user-style.css')
   
 block content
-  form#form-signin.form(action="/login"+redirect, method="POST")
+  form#form-signin.form(action="/user/login"+redirect, method="POST")
     .form-header
       h4 请登录
     .form-body
@@ -18,7 +18,7 @@ block content
       input.btn.btn-default(type='submit', value="提交")
       br
       br
-      a(href='/findpasswd') Forget password  
+      a(href='/user/findpasswd') Forget password  
 
 block js
-  script(src="/main.js")
+  script(src="/user-main.js")

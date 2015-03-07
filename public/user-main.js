@@ -24,7 +24,7 @@ nameDuplicateCheck: function(){
 
 	if (!v) return;
 
-	$.post("/api/user/nameDupCheck", {name: v}, function(ret){		
+	$.post("/user/api/nameDupCheck", {name: v}, function(ret){		
 		$('#nameCheckMsg').html('');
 		$('#name').data("error", false);
 		$('#name').parent().removeClass('has-error');
@@ -54,7 +54,7 @@ emailDuplicateCheck: function(){
 	$('#email').data("error", false);
 	$('#email').parent().removeClass('has-error');
 
-	$.post("/api/user/emailDupCheck", {email: v}, function(ret){		
+	$.post("/user/api/emailDupCheck", {email: v}, function(ret){		
 		$('#emailCheckMsg').html('');
 		$('#email').data("error", false);
 		$('#email').parent().removeClass('has-error');

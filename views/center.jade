@@ -1,13 +1,13 @@
 extends layout
 
 block css
-  link(rel='stylesheet', href='/style.css')
+  link(rel='stylesheet', href='/user-style.css')
 
 block content
   .container
     h1 Welcom #{name}
 
-    form#form-signin.form(action="/i/changepasswd", method="POST")
+    form#form-signin.form(action="/user/i/changepasswd", method="POST")
       .form-header
         h4 change password
       .form-body
@@ -16,7 +16,7 @@ block content
           input#passwdLogin.form-control(name="newpasswd", type='password', required)
         input.btn.btn-default(type='submit', value="提交")
  
-    a.btn.btn-default(href="/logout") logout
+    a.btn.btn-default(href="/user/logout") logout
 
 block js
-  script(src="/main.js")
+  script(src="/user-main.js")

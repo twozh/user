@@ -26,9 +26,7 @@ var login = function(req, res) {
 };
 
 var loginPost = function(req, res){
-	console.log(req.body);
-	console.log(req.query);
-	var redirect='/i';
+	var redirect='/';
 
 	if (req.query.redirect){
 		redirect = req.query.redirect;
@@ -51,7 +49,7 @@ var loginPost = function(req, res){
 var logout = function(req, res){
 	req.session.destroy(function(){
 
-		return res.redirect("/");
+		return res.redirect("/user");
 	});
 };
 
@@ -76,14 +74,14 @@ var signupPost = function(req, res){
 			req.session.userid = user._id;
 			req.session.username = req.body.name;
 			req.session.auth = true;
-			return res.redirect('/i');
+			return res.redirect('/');
 		});
 	});
 };
 
 var admin = function(req, res){
 	if (req.session.auth !== true){
-		return res.redirect('/login?redirect='+req.url);
+		return res.redirect('/user/login?redirect='+req.url);
 	}
 
 	User.findById(req.session.userid, function(err, user){
@@ -105,7 +103,7 @@ var admin = function(req, res){
 
 var userCenter = function(req, res){
 	if (req.session.auth !== true){
-		return res.redirect('/login?redirect='+req.url);
+		return res.redirect('/user/login?redirect='+req.url);
 	}
 
 	var render = {
