@@ -1,13 +1,9 @@
-/*
-	user session provide:
-	req.session.auth
-	req.session.username
-	req.session.userid
- */
+/* the interface used by app */
+
+/* interactive logic */
 exports.route = require('./routes/user-route.js');
+
+/* core api like CRUD */
 exports.apiRoute = require('./routes/user-route-api.js');
 
-exports.loginPath = "/user/login";
-
-exports.User = require('./routes/user-model.js');
 

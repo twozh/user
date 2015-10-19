@@ -3,6 +3,7 @@ var router = express.Router();
 var User = require('./user-model.js');
 var nodemailer = require('nodemailer');
 var gFindpassTimeout = 10*60*1000; //10min
+var config = require('../config.js').config;
 
 // create reusable transporter object using SMTP transport
 var transporter = nodemailer.createTransport({
@@ -16,7 +17,7 @@ var transporter = nodemailer.createTransport({
 /************************************************
 	route and control
 *************************************************/
-var login = function(req, res) {
+var loginView = function(req, res) {
 	var redirect = '';
 	if (req.query.redirect){
 		redirect = '?redirect=' + req.query.redirect;
@@ -25,21 +26,21 @@ var login = function(req, res) {
 	res.render('login', {redirect: redirect});
 };
 
-var loginPost = function(req, res){
+var loginControl = function(req, res){
 	var redirect='/';
 
 	if (req.query.redirect){
 		redirect = req.query.redirect;
 	}
 
-	User.auth(req.body.name, req.body.pass, function(err, userid){
+	User.auth(req.body.email, req.body.pass, function(err, user){
 		if (err){
 			return res.status(403).send(err.message);
 		}
 
 		req.session.regenerate(function(){
-			req.session.userid = userid;
-			req.session.username = req.body.name;
+			req.session.userid = user._id;
+			req.session.username = user.name;
 			req.session.auth = true;
 			return res.redirect(redirect);
 		});
@@ -49,20 +50,20 @@ var loginPost = function(req, res){
 var logout = function(req, res){
 	req.session.destroy(function(){
 
-		return res.redirect("/user");
+		return res.redirect('/user');
 	});
 };
 
-var signup = function(req, res) {
+var signupView = function(req, res) {
 	res.render('signup');
 };
 
-var signupPost = function(req, res){
+var signupControl = function(req, res){
 	var email = req.body.email;
 	var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	if (!regex.test(email)){
-		return res.status(403).send("Email格式不正确！");
+		return res.status(403).send('Email format is not correct！');
 	}
 
 	User.create(req.body, function(err, user){
@@ -79,7 +80,7 @@ var signupPost = function(req, res){
 	});
 };
 
-var admin = function(req, res){
+var adminView = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect('/user/login?redirect='+req.url);
 	}
@@ -101,7 +102,7 @@ var admin = function(req, res){
 	});	
 };
 
-var userCenter = function(req, res){
+var userCenterView = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect('/user/login?redirect='+req.url);
 	}
@@ -113,7 +114,7 @@ var userCenter = function(req, res){
 	res.render('center', render);
 };
 
-var changePasswd = function(req, res){
+var changePasswdControl = function(req, res){
 	if (req.session.auth !== true){
 		return res.status(403).send('not login');
 	}
@@ -128,16 +129,16 @@ var changePasswd = function(req, res){
 };
 
 
-var findPasswd = function(req, res){
+var findPasswdView = function(req, res){
 	res.render('findpasswd');
 };
 
-var findPasswdPost = function(req, res){
+var findPasswdControl = function(req, res){
 	User.findOne({email: req.body.email}, function(err, user){
 		if (err)
 			return res.status(403).send(err.message);
 		if (!user)
-			return res.status(403).send("E-mail dose not exist！");
+			return res.status(403).send('E-mail is not exist！');
 
 		var now = Date.now();
 		var diff = now - user.findStartTime;
@@ -150,9 +151,9 @@ var findPasswdPost = function(req, res){
 		var mailOptions = {
 			from: 'User Center <ceo@jiansoft.net>', // sender address
 			to: req.body.email, // list of receivers
-			subject: 'Change password', // Subject line
+			subject: 'Find password', // Subject line
 			text: 'Hello world ✔', // plaintext body
-			html: "<a href=http://localhost:3000/i/changepasswd/" + user._id + ">Change password</a>" // html body
+			html: "<a href=" + config.findPasswdUrl + user._id + ">Change password</a>" // html body
 		};
 
 		// send mail with defined transport object
@@ -173,7 +174,6 @@ var findPasswdPost = function(req, res){
 };
 
 var changePasswdByFind = function(req, res){
-
 	User.findById(req.params.id, function(err, user){
 		var now = Date.now();
 		var diff = now - user.findStartTime;
@@ -212,20 +212,20 @@ var changePasswdByFindPost = function(req, res){
 	});	
 };
 
-router.get('/', 				login);
-router.get('/login', 			login);
-router.post('/login',			loginPost);
+router.get('/', 				loginView);
+router.get('/login', 			loginView);
+router.post('/login',			loginControl);
 router.get('/logout', 			logout);
-router.get('/signup', 			signup);
-router.post('/signup', 			signupPost);
-router.get('/admin',			admin);
-router.get('/i', 				userCenter);
-router.post('/i/changepasswd',	changePasswd);
+router.get('/signup', 			signupView);
+router.post('/signup', 			signupControl);
+router.get('/admin',			adminView);
+router.get('/i', 				userCenterView);
+router.post('/i/changepasswd',	changePasswdControl);
+
+router.get('/findpasswd', 		findPasswdView);
+router.post('/findpasswd', 		findPasswdControl);
 router.get('/i/changepasswd/:id', changePasswdByFind);
 router.post('/i/changepasswd/:id', changePasswdByFindPost);
-router.get('/findpasswd', 		findPasswd);
-router.post('/findpasswd', 		findPasswdPost);
-
 
 
 module.exports = router;

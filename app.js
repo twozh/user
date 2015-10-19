@@ -10,8 +10,8 @@ var methodOverride = require('method-override');
 var mongoose = require('mongoose');
 mongoose.connect("mongodb://localhost/user");
 
-var user = require('./index.js').userRoute;
-var userApi = require('./index.js').userApiRoute;
+var user = require('./index.js').route;
+var userApi = require('./index.js').apiRoute;
 
 var app = express();
 
@@ -32,8 +32,15 @@ app.use(methodOverride('X-HTTP-Method'));          // Microsoft
 app.use(methodOverride('X-HTTP-Method-Override')); // Google/GData
 app.use(methodOverride('X-Method-Override'));      // IBM
 
-app.use('/api/user/', userApi);
-app.use('/', user);
+app.use('/user/api', userApi);
+app.use('/user', user);
+app.use('/', function(req, res){
+    if (true === req.session.auth){
+        return res.send('hello ' + req.session.username);
+    }
+
+    res.redirect('/user');
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
